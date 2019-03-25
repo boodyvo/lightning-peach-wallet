@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { appOperations } from "modules/app";
 import { accountOperations } from "modules/account";
-import { helpers, logger } from "additional";
+import { helpers, logger, togglePasswordVisibility } from "additional";
 import { authOperations } from "modules/auth";
 import { exceptions } from "config";
 import Modal from "components/modal";
@@ -93,16 +93,9 @@ class PasswordRemoteQR extends Component {
                 <form onSubmit={this.handleLogin}>
                     <div className="row">
                         <div className="col-xs-12">
-                            <div className="form-label">
-                                <label htmlFor="password">
-                                    Password
-                                </label>
-                            </div>
-                        </div>
-                        <div className="col-xs-12">
                             <input
                                 id="password"
-                                className={`form-text form-text--icon_eye ${this.state.passwordError ?
+                                className={`form-text form-text--icon_eye form-text--qr-password ${this.state.passwordError ?
                                     "form-text__error" :
                                     ""}`}
                                 name="password"
@@ -113,6 +106,10 @@ class PasswordRemoteQR extends Component {
                                 }}
                                 onChange={() => { this.setState({ passwordError: null }) }}
                                 disabled={this.state.processing}
+                            />
+                            <i
+                                className="form-text__icon form-text__icon--eye form-text__icon--eye_open"
+                                onClick={togglePasswordVisibility}
                             />
                         </div>
                     </div>

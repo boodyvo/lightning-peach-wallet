@@ -602,12 +602,6 @@ class Profile extends Component {
                             >
                                 Switch to another wallet
                             </button>
-                        </div>
-                            <div
-                                className={`switcher-toggle ${this.state.sound ? "active" : ""}`}
-                                onClick={this.toggleSound}
-                            />
-                        </div>
                 </div>
                 </div>
 
