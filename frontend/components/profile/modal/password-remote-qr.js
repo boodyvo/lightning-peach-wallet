@@ -50,13 +50,7 @@ class PasswordRemoteQR extends Component {
         }
         // delete old certs and change ip
         await dispatch(accountOperations.rebuildCertificate());
-
-        // test
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        await sleep(10 * 1000);
-
+        
         await window.ipcClient("loadLndPath", { login });
         const init = await dispatch(authOperations.login(savedLogin, password));
         this.setState({
