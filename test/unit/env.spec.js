@@ -49,7 +49,7 @@ describe("Settings tests", () => {
         });
 
         it("lnd.no_macaroons set to true", () => {
-            expect(settings.lnd.no_macaroons).to.deep.equal(true);
+            expect(settings.lnd.no_macaroons).to.deep.equal(false);
         });
 
         it("lnd.address_look_ahead in [100..1000]", () => {
