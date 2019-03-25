@@ -9,8 +9,9 @@ const path = require("path");
 const registerIpc = require("electron-ipc-tunnel/server").default;
 const settings = require("./settings");
 const main = require("../main");
-const logger = baseLogger.child("ipc");
 const grpcStatus = require("grpc").status;
+
+const logger = baseLogger.child("ipc");
 
 const lnd = new Lnd();
 
