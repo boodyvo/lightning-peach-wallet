@@ -9,11 +9,6 @@ const path = require("path");
 const registerIpc = require("electron-ipc-tunnel/server").default;
 const settings = require("./settings");
 const main = require("../main");
-const internalIp = require("internal-ip");
-// ToDo: uncomment when will use public ip
-// const publicIp = require("public-ip");
-
-
 const logger = baseLogger.child("ipc");
 const grpcStatus = require("grpc").status;
 

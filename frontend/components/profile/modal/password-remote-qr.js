@@ -5,7 +5,8 @@ import { appOperations } from "modules/app";
 import { accountOperations } from "modules/account";
 import { helpers, logger } from "additional";
 import { authOperations } from "modules/auth";
-import { statusCodes } from "config";
+import { exceptions } from "config";
+import Modal from "components/modal";
 
 class PasswordRemoteQR extends Component {
     constructor(props) {
@@ -19,18 +20,14 @@ class PasswordRemoteQR extends Component {
 
     _validatePassword = (restorePass) => {
         const { password } = this.props;
-
-        // ToDo: remove console.log
-        console.log("Hashed password:", password);
-        console.log("Password:", restorePass);
         if (!password) {
             logger.error("User password not found in store");
-            return statusCodes.EXCEPTION_PASSWORD_MISMATCH;
+            return exceptions.EXCEPTION_PASSWORD_MISMATCH;
         }
         if (!restorePass) {
-            return statusCodes.EXCEPTION_FIELD_IS_REQUIRED;
+            return exceptions.EXCEPTION_FIELD_IS_REQUIRED;
         } else if (helpers.hash(restorePass) !== password) {
-            return statusCodes.EXCEPTION_PASSWORD_MISMATCH;
+            return exceptions.EXCEPTION_PASSWORD_MISMATCH;
         }
         return null;
     };
@@ -80,65 +77,76 @@ class PasswordRemoteQR extends Component {
         const spinner = this.state.rebuilding ? <div className="spinner" /> : null;
 
         return (
-            <div className="modal-wrapper">
-                <div className="modal-layout" onClick={this.closeModal} />
-                <div className="modal modal-qr-password" tabIndex="-1" role="dialog">
-                    <form onSubmit={this.handleLogin}>
-                        <div className="row mt-14">
-                            <div className="col-xs-12">
-                                <div className="form-label">
-                                    <label htmlFor="password">
-                                        Password
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="col-xs-12">
-                                <input
-                                    id="password"
-                                    className={`form-text form-text--icon_eye ${this.state.passwordError ?
-                                        "form-text__error" :
-                                        ""}`}
-                                    name="password"
-                                    type="password"
-                                    placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"
-                                    ref={(ref) => {
-                                        this.password = ref;
-                                    }}
-                                    onChange={() => { this.setState({ passwordError: null }) }}
-                                    disabled={this.state.processing}
-                                />
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-xs-12 text-left">
-                                <span className="button_with_spinner">
-                                    <button
-                                        type="button"
-                                        className="button button__orange button__side-padding50"
-                                        onClick={this.rebuildCerts}
-                                        disabled={this.state.rebuilding}
-                                    >
-                                        Wallet restart
-                                    </button>
-                                    {spinner}
-                                </span>
-                            </div>
-                        </div>
-                    </form>
-                    <div className="row payment_result__btn-row">
-                        <div className="col-xs-12">
-                            <button
-                                type="button"
-                                className="button button__link text-uppercase button__side-padding50"
-                                onClick={this.closeModal}
-                                disabled={this.state.rebuilding}
-                            >
-                                Close
-                            </button>
-                        </div>
+        <Modal
+            title="Enter your password"
+            theme="small"
+            onClose={this.closeModal}
+            showCloseButton
+        >
+            <div className="modal__body">
+                <div className="row">
+                    <div className="col-xs-12">
+                        To generate a new QR code, you will need to restart the wallet node
                     </div>
                 </div>
             </div>
+            <div className="modal__footer">
+                <form onSubmit={this.handleLogin}>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <div className="form-label">
+                                <label htmlFor="password">
+                                    Password
+                                </label>
+                            </div>
+                        </div>
+                        <div className="col-xs-12">
+                            <input
+                                id="password"
+                                className={`form-text form-text--icon_eye ${this.state.passwordError ?
+                                    "form-text__error" :
+                                    ""}`}
+                                name="password"
+                                type="password"
+                                placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"
+                                ref={(ref) => {
+                                    this.password = ref;
+                                }}
+                                onChange={() => { this.setState({ passwordError: null }) }}
+                                disabled={this.state.processing}
+                            />
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <span className="button__spinner">
+                                <button
+                                    type="button"
+                                    className="button button__solid button--fullwide"
+                                    onClick={this.rebuildCerts}
+                                    disabled={this.state.rebuilding}
+                                >
+                                    Wallet restart
+                                </button>
+                                {this.state.rebuilding && <div className="spinner" />}
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div className="block__row-xs">
+                <div className="col-xs-12">
+                    <button
+                        type="button"
+                        className="button button__solid button__solid--transparent button--fullwide"
+                        onClick={this.closeModal}
+                        disabled={this.state.processing}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </Modal>
         );
     }
 }

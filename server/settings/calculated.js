@@ -4,7 +4,6 @@ const helpers = require("../utils/helpers");
 const baseLogger = require("../utils/logger");
 // ToDo: add public ip after testing
 const publicIp = require("public-ip");
-// const internalIp = require("internal-ip");
 
 const logger = baseLogger.child("electron");
 

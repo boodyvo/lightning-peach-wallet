@@ -542,6 +542,39 @@ class Profile extends Component {
                 </div>
                 <div className="profile__row">
                     <div className="col-xs-12">
+                        <div className="profile__line">
+                            <div className="profile__label">
+                                Mobile app access
+                            </div>
+                            <div className="profile__value profile__value--start">
+                                <button
+                                    className="profile__button-label link"
+                                    onClick={() => {
+                                        analytics.event({
+                                            action: "RemoteAccess",
+                                            category: "Profile",
+                                        });
+                                        dispatch(appOperations.openConnectRemoteQRModal());
+                                    }}
+                                >
+                                    Show QR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-xs-12">
+                        <div className="profile__line">
+                            <div className="profile__label" />
+                            <div className="profile__value">
+                                <span className="text-grey">
+                                    Using QR code you can control your wallet remotely using the Peach Wallet mobile app.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="profile__row">
+                    <div className="col-xs-12">
                         <div className="profile__line profile__line--center justify-between-xs">
                             {
                                 appAsDefaultStatus ?
@@ -575,56 +608,9 @@ class Profile extends Component {
                                 onClick={this.toggleSound}
                             />
                         </div>
-                    </div>
                 </div>
-                <div className="row profile__row profile__row--wrap">
-                    <div className="col-xs-12 profile__flex">
-                        <button
-                            className="button button__link button__link--logout"
-                            type="button"
-                            onClick={() => {
-                                analytics.event({
-                                    action: "RemoteAccess",
-                                    category: "Profile",
-                                });
-                                dispatch(appOperations.openConnectRemoteQRModal());
-                            }}
-                        >
-                            QR code for remote access
-                        </button>
-                    </div>
                 </div>
-                <div className="row profile__row profile__row--wrap">
-                    <div className="col-xs-12 profile__flex">
-                        {
-                            appAsDefaultStatus ?
-                                <span className="profile__app-status">
-                                    <b>Peach Wallet</b> is your default lightning wallet
-                                </span> :
-                                <button
-                                    type="button"
-                                    className="button button__link profile__app-status"
-                                    onClick={this.sendSetDefaultStatus}
-                                >
-                                    Set <b>Peach Wallet</b> as your default lightning wallet
-                                </button>
-                        }
-                        <button
-                            className="button button__link button__link--logout"
-                            type="button"
-                            onClick={() => {
-                                analytics.event({
-                                    action: "Logout",
-                                    category: "Profile",
-                                });
-                                dispatch(appOperations.openLogoutModal());
-                            }}
-                        >
-                            Log out
-                        </button>
-                    </div>
-                </div>
-            </div>
+
         );
     };
 
