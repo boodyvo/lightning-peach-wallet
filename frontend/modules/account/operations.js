@@ -359,9 +359,7 @@ function logout(keepModalState = false) {
         await window.ipcClient("logout");
         await dispatch(appOperations.closeDb());
         dispatch(actions.logoutAcount(keepModalState));
-        if (redirect) {
-            hashHistory.push("/");
-        }
+        hashHistory.push("/");
         dispatch(actions.finishLogout());
         dispatch(notificationsActions.removeAllNotifications());
         return successPromise();

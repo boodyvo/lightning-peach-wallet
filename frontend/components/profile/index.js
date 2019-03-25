@@ -542,6 +542,38 @@ class Profile extends Component {
                 </div>
                 <div className="profile__row">
                     <div className="col-xs-12">
+                        <div className="profile__line profile__line--center justify-between-xs">
+                            {
+                                appAsDefaultStatus ?
+                                    <span className="profile__app-status">
+                                        Peach Wallet is your default lightning wallet
+                                    </span> :
+                                    <button
+                                        type="button"
+                                        className="button button__link profile__app-status"
+                                        onClick={this.sendSetDefaultStatus}
+                                    >
+                                        Set <b>Peach Wallet</b> as your default lightning wallet
+                                    </button>
+                            }
+                            <button
+                                className="link link--red link--logout"
+                                type="button"
+                                onClick={() => {
+                                    analytics.event({
+                                        action: "Logout",
+                                        category: "Profile",
+                                    });
+                                    dispatch(appOperations.openLogoutModal());
+                                }}
+                            >
+                                Switch to another wallet
+                            </button>
+                        </div>
+                        </div>
+                </div>
+                <div className="profile__row">
+                    <div className="col-xs-12">
                         <div className="profile__line">
                             <div className="profile__label">
                                 Mobile app access
@@ -573,36 +605,7 @@ class Profile extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="profile__row">
-                    <div className="col-xs-12">
-                        <div className="profile__line profile__line--center justify-between-xs">
-                            {
-                                appAsDefaultStatus ?
-                                    <span className="profile__app-status">
-                                        Peach Wallet is your default lightning wallet
-                                    </span> :
-                                    <button
-                                        type="button"
-                                        className="button button__link profile__app-status"
-                                        onClick={this.sendSetDefaultStatus}
-                                    >
-                                        Set <b>Peach Wallet</b> as your default lightning wallet
-                                    </button>
-                            }
-                            <button
-                                className="link link--red link--logout"
-                                type="button"
-                                onClick={() => {
-                                    analytics.event({
-                                        action: "Logout",
-                                        category: "Profile",
-                                    });
-                                    dispatch(appOperations.openLogoutModal());
-                                }}
-                            >
-                                Switch to another wallet
-                            </button>
-                </div>
+
                 </div>
 
         );
