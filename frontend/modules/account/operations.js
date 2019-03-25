@@ -334,6 +334,7 @@ function finishIntervalStatusChecks() {
 
 function logout(keepModalState = false) {
     return async (dispatch, getState) => {
+        console.log("Logouting");
         if (getState().account.isLogouting) {
             return unsuccessPromise(logout);
         }
@@ -359,7 +360,10 @@ function logout(keepModalState = false) {
         await window.ipcClient("logout");
         await dispatch(appOperations.closeDb());
         dispatch(actions.logoutAcount(keepModalState));
-        hashHistory.push("/");
+        console.log("Will redirect", redirect);
+        if (redirect) {
+            hashHistory.push("/");
+        }
         dispatch(actions.finishLogout());
         dispatch(notificationsActions.removeAllNotifications());
         return successPromise();
@@ -615,6 +619,39 @@ function checkAmount(amount, type = "lightning") {
     };
 }
 
+/**
+ * @return ${host}/n${macaroonsHex}/n${port}
+ */
+function getRemoteAccressString() {
+    return async (dispatch, getState) => {
+        console.log("Will generate");
+        const response = await window.ipcClient("generateRemoteAccessString", { username: getState().account.login });
+        console.log("Internal response", response);
+        if (!response.ok) {
+            logger.error("Error on getRemoteAccressString", response.error);
+            return errorPromise(response.error, getRemoteAccressString);
+        }
+
+        console.log("Will return success promise", response.remoteAccessString);
+        return successPromise({
+            remoteAccessString: response.remoteAccessString,
+        });
+    };
+}
+
+function rebuildCertificate() {
+    return async (dispatch, getState) => {
+        console.log("Will rebuild");
+        await delay(10000);
+        const response = await window.ipcClient("rebuildLndCerts", { username: getState().account.login });
+        if (!response.ok) {
+            logger.error("Error on rebuildCertificate", response.error);
+            return errorPromise(response.error, rebuildCertificate);
+        }
+        return successPromise();
+    };
+}
+
 export {
     setInitConfig,
     loadAccountSettings,
@@ -639,4 +676,6 @@ export {
     setAnalyticsMode,
     setTermsMode,
     setWalletMode,
+    getRemoteAccressString,
+    rebuildCertificate,
 };

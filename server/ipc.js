@@ -9,6 +9,10 @@ const path = require("path");
 const registerIpc = require("electron-ipc-tunnel/server").default;
 const settings = require("./settings");
 const main = require("../main");
+const internalIp = require("internal-ip");
+// ToDo: uncomment when will use public ip
+// const publicIp = require("public-ip");
+
 
 const logger = baseLogger.child("ipc");
 const grpcStatus = require("grpc").status;
@@ -24,25 +28,27 @@ ipcMain.on("setDefaultLightningApp", () => {
     app.setAsDefaultProtocolClient("lightning");
 });
 
-
-registerIpc("startLnd", async (event, arg) => {
+async function _startLndIpc(arg) {
     console.log("Stating lnd");
     const response = await lnd.start(arg.walletName);
     logger.info(response);
     if (!response.ok) {
+        logger.debug("Will call stop from _startLndIpc");
         await lnd.stop();
         logger.info({ func: "startLnd" }, response);
     }
     logger.info({ func: "startLnd" }, response);
 
     return response;
-});
+}
+
+registerIpc("startLnd", async (event, arg) => _startLndIpc(arg));
 
 registerIpc("unlockLnd", async (event, arg) => {
+    logger.debug("Will unlock lnd");
     const response = await lnd.unlockWallet(arg.password);
     if (!response.ok) {
         await lnd.stop();
-        logger.error({ func: "unlockLnd" }, response);
     }
     logger.info({ func: "unlockLnd" }, response);
 
@@ -322,7 +328,48 @@ registerIpc("unsubscribeInvoices", async () => {
  */
 registerIpc("clearLndData", async () => {
     lnd.shoudClearData = true;
+    logger.debug("Will call stop from clearLndData");
     await lnd.stop();
+});
+
+
+registerIpc("rebuildLndCerts", async (event, arg) => {
+    logger.debug("Inside rebuildLndCerts");
+    const stopResp = await lnd.stop();
+    const response = await lnd.rebuildCerts(arg.username);
+    if (response.ok) {
+        return {
+            ok: true,
+        };
+    }
+    return {
+        ok: false,
+        error: response.error,
+    };
+});
+
+// ToDo: set public ip
+registerIpc("generateRemoteAccessString", async (event, arg) => {
+    try {
+        logger.debug("Inside generate");
+        const lndIP = await settings.get.getLndIP(arg.username);
+        logger.debug(`IP: ${lndIP}`);
+        const macaroons = lnd.getMacaroonsHex();
+        logger.debug(`Macaroons: ${macaroons}`);
+        const cert = lnd.getCert();
+        logger.debug(`Cert: ${cert}`);
+
+        return {
+            ok: true,
+            remoteAccessString: `https://${lndIP}\n${macaroons}\n${cert}`,
+        };
+    } catch (err) {
+        logger.error("ipc generateRemoteAccessString", err);
+        return {
+            ok: false,
+            error: err,
+        };
+    }
 });
 
 /**
@@ -338,6 +385,7 @@ const shutdown = async () => {
             subscribeInvoicesCall.stream.cancel();
         }
         await localInvoiceServer.closeConnection();
+        logger.debug("Will call stop from shutdown");
         await lnd.stop();
         return {
             ok: true,
@@ -347,4 +395,5 @@ const shutdown = async () => {
         return { ok: false };
     }
 };
+
 module.exports.shutdown = shutdown;

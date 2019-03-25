@@ -17,6 +17,8 @@ import SubHeader from "components/subheader";
 import DigitsField from "components/ui/digits-field";
 import ConfirmLogout from "./modal/logout";
 import Legal from "./modal/law";
+import ConnectRemoteQR from "./modal/connect-remote-qr";
+import PasswordRemoteQR from "./modal/password-remote-qr";
 
 class Profile extends Component {
     constructor(props) {
@@ -568,6 +570,58 @@ class Profile extends Component {
                                 Switch to another wallet
                             </button>
                         </div>
+                            <div
+                                className={`switcher-toggle ${this.state.sound ? "active" : ""}`}
+                                onClick={this.toggleSound}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="row profile__row profile__row--wrap">
+                    <div className="col-xs-12 profile__flex">
+                        <button
+                            className="button button__link button__link--logout"
+                            type="button"
+                            onClick={() => {
+                                analytics.event({
+                                    action: "RemoteAccess",
+                                    category: "Profile",
+                                });
+                                dispatch(appOperations.openConnectRemoteQRModal());
+                            }}
+                        >
+                            QR code for remote access
+                        </button>
+                    </div>
+                </div>
+                <div className="row profile__row profile__row--wrap">
+                    <div className="col-xs-12 profile__flex">
+                        {
+                            appAsDefaultStatus ?
+                                <span className="profile__app-status">
+                                    <b>Peach Wallet</b> is your default lightning wallet
+                                </span> :
+                                <button
+                                    type="button"
+                                    className="button button__link profile__app-status"
+                                    onClick={this.sendSetDefaultStatus}
+                                >
+                                    Set <b>Peach Wallet</b> as your default lightning wallet
+                                </button>
+                        }
+                        <button
+                            className="button button__link button__link--logout"
+                            type="button"
+                            onClick={() => {
+                                analytics.event({
+                                    action: "Logout",
+                                    category: "Profile",
+                                });
+                                dispatch(appOperations.openLogoutModal());
+                            }}
+                        >
+                            Log out
+                        </button>
                     </div>
                 </div>
             </div>
@@ -582,6 +636,12 @@ class Profile extends Component {
                 break;
             case appTypes.MODAL_STATE_LEGAL:
                 modal = <Legal />;
+                break;
+            case appTypes.MODAL_STATE_CONNECT_REMOTE_QR:
+                modal = <ConnectRemoteQR />;
+                break;
+            case appTypes.MODAL_STATE_PASSWORD_REMOTE_QR:
+                modal = <PasswordRemoteQR />;
                 break;
             default:
                 modal = null;
