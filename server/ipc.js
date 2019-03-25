@@ -343,16 +343,11 @@ registerIpc("rebuildLndCerts", async (event, arg) => {
     };
 });
 
-// ToDo: set public ip
 registerIpc("generateRemoteAccessString", async (event, arg) => {
     try {
-        logger.debug("Inside generate");
         const lndIP = await settings.get.getLndIP(arg.username);
-        logger.debug(`IP: ${lndIP}`);
         const macaroons = lnd.getMacaroonsHex();
-        logger.debug(`Macaroons: ${macaroons}`);
         const cert = lnd.getCert();
-        logger.debug(`Cert: ${cert}`);
 
         return {
             ok: true,

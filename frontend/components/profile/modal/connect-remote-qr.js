@@ -44,7 +44,7 @@ class ConnectRemoteQR extends Component {
     render() {
         return (
         <Modal
-            title="Choose Wallet Privacy Mode"
+            title=""
             onClose={this.closeModal}
             showCloseButton={true}
             theme="wallet-mode"
@@ -52,59 +52,37 @@ class ConnectRemoteQR extends Component {
             <div className="modal-body">
                 <div className="row card__row align-stretch-xs">
                     <div className="col-xs-12 col-md-6 card__col">
-                        <div className="card">
-                            <img className="card__qr" src={this.state.qrRemoteAccessString} alt="QR" />
+                        <div className="card__qr card__qr-container">
+                            <img className="card__qr-container-image" src={this.state.qrRemoteAccessString} alt="QR" />
                         </div>
                     </div>
                     <div className="card__col col-xs-12 col-md-6">
-                        <div className="card">
-                            <div className="card__body">
-                                <div className="card__title">
+                        <div className="card__qr">
+                            <div className="card__qr-title">
                                     Mobile wallet access
                                 </div>
-                                <div className="card__description">
+                            <div className="card__qr-description">
                                     Using this QR code you can control your wallet remotely using the Peach Wallet mobile app.
                                     If your external IP changes on the desktop, you will need to reconnect the mobile app using a new QR code.
-                                    <ul className="card__list">
-                                        <li className="card__list-item">
-                                            <div className="label label--checkmark">
+                                    <ul className="card__qr-description-list">
+                                        <li className="card__qr-description-list-item">
+                                            <div className="card__qr-description-list-item-icon">
                                                 You need to have public IP address
                                             </div>
                                         </li>
-                                        <li className="card__list-item">
-                                            <div className="label label--checkmark">
+                                        <li className="card__qr-description-list-item">
+                                            <div className="card__qr-description-list-item-icon">
                                                 Set up router for forwarding from external port 10014 to internal one 10014
                                             </div>
                                         </li>
-                                        <li className="card__list-item">
-                                            <div className="label label--checkmark">
+                                        <li className="card__qr-description-list-item">
+                                            <div className="card__qr-description-list-item-icon">
                                                 After that you need to regenerate certificate locating within the same network with router
                                             </div>
                                         </li>
                                     </ul>
                                     A node will be available as long as wallet is active and PC is online.
                                 </div>
-                                <ul className="card__list">
-                                    <div className="card__list-title">
-                                        Disabled in the Standard Mode:
-                                    </div>
-                                    <li className="card__list-item">
-                                        <div className="label label--xmark">
-                                            Recurring payments
-                                        </div>
-                                    </li>
-                                    <li className="card__list-item">
-                                        <div className="label label--xmark">
-                                            Payments by Lightning ID
-                                        </div>
-                                    </li>
-                                    <li className="card__list-item">
-                                        <div className="label label--xmark">
-                                            Contacts
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>

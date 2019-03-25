@@ -50,7 +50,6 @@ class PasswordRemoteQR extends Component {
         }
         // delete old certs and change ip
         await dispatch(accountOperations.rebuildCertificate());
-        console.log("Will dispatch login with pass and login", password, savedLogin);
 
         // test
         function sleep(ms) {

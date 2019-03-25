@@ -1,5 +1,4 @@
 const fs = require("fs");
-// ToDo: add public ip after testing
 const publicIp = require("public-ip");
 const { Certificate } = require('@fidm/x509');
 const protoLoader = require("@grpc/proto-loader");
@@ -435,9 +434,6 @@ class Lnd extends Exec {
      * @return {Promise<*>}
      */
     async start(name) {
-        logger.debug("Settings lnd: ", settings.get.lnd);
-        logger.debug("Settings no_macaroons: ", settings.get.lnd.no_macaroons);
-        logger.debug("!Macaroons: ", !settings.get.lnd.no_macaroons);
         if (!name) {
             const error = "No name for LND given";
             logger.error({ func: this.start }, error);
@@ -511,15 +507,9 @@ class Lnd extends Exec {
     }
 
     async rebuildCerts(username) {
-        logger.debug("Rebuild certs", "inside");
         this._deleteCerts();
-
-        logger.debug("Rebuild certs", "deleted certs");
         const ip = `${await publicIp.v4()}:${settings.get.lnd.restlisten}`;
-        logger.debug("Rebuild certs", "will save ip", ip);
         settings.get.saveLndIP(username, ip);
-
-        logger.debug("Saved certs");
 
         return {
             ok: true,
@@ -592,11 +582,8 @@ class Lnd extends Exec {
                 if (lastError) {
                     ipcSend("setLndInitStatus", lastError);
                 }
-                logger.debug("Will call handleExit from exit lnd call");
                 this.handleExit(code, signal);
             });
-            // ToDo: remove log
-            logger.debug("Save lnd pid", lnd.pid);
             this._savePid(lnd.pid);
         } catch (err) {
             this.starting = false;
@@ -648,9 +635,6 @@ class Lnd extends Exec {
 
     async unlockWallet(password) {
         ipcSend("setLndInitStatus", "Unlocking wallet in LND");
-        // ToDo: remove dgub logging with password
-        logger.debug("Will call unlock lnd rpc with password", password);
-        logger.debug("Will call unlock lnd rpc with params", { wallet_password: Buffer.from(password, "binary") });
         let response = await this.call("unlockWallet", { wallet_password: Buffer.from(password, "binary") });
         // logger.dedug("Got response from unlocking", response);
         if (!response.ok) {
@@ -672,7 +656,6 @@ class Lnd extends Exec {
         }
         logger.debug("[LND] Macaroons existance", fs.existsSync(path.join(settings.get.lndPath, this.name, MACAROON_FILE)));
         const service = await getRpcService(this.name, "Lightning");
-        logger.debug("[LND] Service response", service);
         if (!settings.get.lnd.no_macaroons) {
             this._client = service.client;
             this._metadata = service.metadata;
@@ -680,9 +663,7 @@ class Lnd extends Exec {
             this._client = service;
         }
         // Sometimes rpc client start before lnd ready to accept rpc calls, let's wait
-        logger.debug("[LND] Will wait for lnd is ready");
         const getInfo = await this._waitRpcAvailability();
-        logger.debug("[LND] Got getInfo response", getInfo);
         this.starting = false;
         settings.set("lndPeer", [this.name, this._peerPort]);
         settings.saveLndPath(this.name, settings.get.lndPath);

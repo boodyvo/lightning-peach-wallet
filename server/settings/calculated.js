@@ -2,7 +2,6 @@ const fs = require("fs");
 const { join } = require("path");
 const helpers = require("../utils/helpers");
 const baseLogger = require("../utils/logger");
-// ToDo: add public ip after testing
 const publicIp = require("public-ip");
 
 const logger = baseLogger.child("electron");
@@ -143,7 +142,6 @@ module.exports = ({
         const fileExists = fs.existsSync(ipFile);
         const lnd = config.get("lnd");
         const defaultIP = `${await publicIp.v4()}:${lnd.restlisten}`;
-        logger.debug("[SETTINGS] - getLndIP defaultip:", defaultIP);
         if (!fileExists) {
             // default return for the function
             await saveLndIP(username, defaultIP);
